@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewKeeper AI Model Classes</title>
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+            min-height: 100vh;
+            color: #e6edf3;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #58a6ff, #a371f7, #f778ba);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .stat {
+            background: rgba(56, 139, 253, 0.1);
+            border: 1px solid rgba(56, 139, 253, 0.3);
+            border-radius: 12px;
+            padding: 20px 35px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+
+        .stat-label {
+            color: #8b949e;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .model-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .model-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            border-color: #58a6ff;
+        }
+
+        .model-card.completed {
+            border-left: 4px solid #3fb950;
+            background: linear-gradient(135deg, rgba(63, 185, 80, 0.05), #161b22 30%);
+        }
+
+        .model-card.completed:hover {
+            border-color: #3fb950;
+            box-shadow: 0 16px 32px rgba(63, 185, 80, 0.15);
+        }
+
+        .model-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #30363d;
+            background: linear-gradient(135deg, rgba(56, 139, 253, 0.1), transparent);
+        }
+
+        .model-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .model-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .model-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-done { background: rgba(63, 185, 80, 0.2); color: #3fb950; border: 1px solid rgba(63, 185, 80, 0.4); }
+        .badge-next { background: rgba(163, 113, 247, 0.2); color: #a371f7; border: 1px solid rgba(163, 113, 247, 0.4); }
+        .badge-high { background: rgba(248, 81, 73, 0.2); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); }
+        .badge-medium { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.4); }
+        .badge-low { background: rgba(56, 139, 253, 0.2); color: #58a6ff; border: 1px solid rgba(56, 139, 253, 0.4); }
+        .badge-training { background: rgba(247, 119, 186, 0.2); color: #f778ba; border: 1px solid rgba(247, 119, 186, 0.4); }
+
+        .model-category {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        .model-classes-count {
+            font-size: 0.85rem;
+            color: #58a6ff;
+            margin-top: 4px;
+        }
+
+        .model-body {
+            padding: 20px 25px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .model-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .model-body::-webkit-scrollbar-track {
+            background: #21262d;
+        }
+
+        .model-body::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 3px;
+        }
+
+        .model-body::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+
+        .class-group {
+            margin-bottom: 18px;
+        }
+
+        .class-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .group-title {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .class-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .class-tag {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #e6edf3;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .class-tag:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            transform: translateY(-1px);
+        }
+
+        .class-tag.critical {
+            border-color: rgba(248, 81, 73, 0.5);
+            background: rgba(248, 81, 73, 0.1);
+        }
+
+        .class-tag.critical:hover {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.2);
+        }
+
+        .class-tag.ready {
+            border-color: rgba(63, 185, 80, 0.6);
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .class-tag.ready:hover {
+            border-color: #3fb950;
+            background: rgba(63, 185, 80, 0.25);
+            box-shadow: 0 0 10px rgba(63, 185, 80, 0.3);
+        }
+
+        .class-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .class-icon img {
+            width: 16px;
+            height: 16px;
+            filter: invert(1) opacity(0.8);
+        }
+
+        /* Hover Image Popup Styles - Fixed positioning to escape overflow */
+        #global-preview {
+            position: fixed;
+            width: 220px;
+            background: #0d1117;
+            border: 2px solid #58a6ff;
+            border-radius: 12px;
+            padding: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.9);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            z-index: 99999;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 166, 255, 0.2);
+            pointer-events: none;
+        }
+
+        #global-preview.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        #global-preview img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        #global-preview .preview-label {
+            text-align: center;
+            padding: 10px 4px 4px;
+            font-size: 0.8rem;
+            color: #e6edf3;
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        #global-preview::after {
+            content: '';
+            position: absolute;
+            border: 10px solid transparent;
+        }
+
+        #global-preview.arrow-bottom::after {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: #58a6ff;
+        }
+
+        #global-preview.arrow-top::after {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: #58a6ff;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            color: #484f58;
+        }
+
+        .flaticon-credit {
+            font-size: 0.75rem;
+            color: #484f58;
+            margin-top: 15px;
+        }
+
+        .flaticon-credit a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .models-grid { grid-template-columns: 1fr; }
+            .stats-bar { gap: 20px; }
+            .stat { padding: 15px 20px; }
+            #global-preview { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ViewKeeper AI Safety Platform</h1>
+            <p class="subtitle">Multi-Model Training Roadmap - Class Definitions</p>
+            <p style="color: #58a6ff; font-size: 0.9rem; margin-top: 10px;">Hover over any class to see a preview image</p>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">AI Models</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">194</div>
+                    <div class="stat-label">Total Classes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">MENA</div>
+                    <div class="stat-label">Region Focus</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="models-grid">
+            <!-- PPE-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">PPE-v1</span>
+                        <span class="model-badge badge-next">Next</span>
+                    </div>
+                    <div class="model-category">PPE Monitoring</div>
+                    <div class="model-classes-count">15 Classes | HIGH Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Head Protection (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="helmet"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2936/2936690.png" alt=""></span>helmet</span>
+                            <span class="class-tag critical" data-class="no_helmet"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2936/2936690.png" alt=""></span>no_helmet</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Body Protection (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="vest"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png" alt=""></span>vest</span>
+                            <span class="class-tag critical" data-class="no_vest"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png" alt=""></span>no_vest</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Hand Protection (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="gloves"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2331/2331716.png" alt=""></span>gloves</span>
+                            <span class="class-tag critical" data-class="no_gloves"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2331/2331716.png" alt=""></span>no_gloves</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Foot Protection (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="boots"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2589/2589903.png" alt=""></span>boots</span>
+                            <span class="class-tag critical" data-class="no_boots"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2589/2589903.png" alt=""></span>no_boots</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Eye & Face Protection (4)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="goggles"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3163/3163179.png" alt=""></span>goggles</span>
+                            <span class="class-tag" data-class="mask"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4320/4320344.png" alt=""></span>mask</span>
+                            <span class="class-tag" data-class="face_shield"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2936/2936655.png" alt=""></span>face_shield</span>
+                            <span class="class-tag" data-class="earmuff"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588614.png" alt=""></span>earmuff</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Full Body & Fall Protection (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="harness"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2936/2936625.png" alt=""></span>harness</span>
+                            <span class="class-tag" data-class="apron"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588235.png" alt=""></span>apron</span>
+                            <span class="class-tag" data-class="coveralls"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2331/2331966.png" alt=""></span>coveralls</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Site-v1</span>
+                        <span class="model-badge badge-next">Next</span>
+                    </div>
+                    <div class="model-category">Construction Site Objects</div>
+                    <div class="model-classes-count">34 Classes | HIGH Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Scaffolding & Structures (6)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="scaffolding"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758346.png" alt=""></span>scaffolding</span>
+                            <span class="class-tag" data-class="ladder"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758427.png" alt=""></span>ladder</span>
+                            <span class="class-tag" data-class="platform"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758370.png" alt=""></span>platform</span>
+                            <span class="class-tag" data-class="formwork"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758413.png" alt=""></span>formwork</span>
+                            <span class="class-tag" data-class="temporary_fence"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1522/1522113.png" alt=""></span>temporary_fence</span>
+                            <span class="class-tag" data-class="safety_net"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727266.png" alt=""></span>safety_net</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Safety Barriers (6)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="barricade"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758359.png" alt=""></span>barricade</span>
+                            <span class="class-tag critical" data-class="safety_cone"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727400.png" alt=""></span>safety_cone</span>
+                            <span class="class-tag critical" data-class="guardrail"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758403.png" alt=""></span>guardrail</span>
+                            <span class="class-tag" data-class="caution_tape"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727294.png" alt=""></span>caution_tape</span>
+                            <span class="class-tag" data-class="bollard"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727326.png" alt=""></span>bollard</span>
+                            <span class="class-tag" data-class="safety_barrier"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758359.png" alt=""></span>safety_barrier</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Signage (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="warning_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/595/595067.png" alt=""></span>warning_sign</span>
+                            <span class="class-tag" data-class="danger_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/595/595067.png" alt=""></span>danger_sign</span>
+                            <span class="class-tag" data-class="construction_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758474.png" alt=""></span>construction_sign</span>
+                            <span class="class-tag" data-class="speed_limit_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3313/3313307.png" alt=""></span>speed_limit_sign</span>
+                            <span class="class-tag" data-class="exit_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2311/2311518.png" alt=""></span>exit_sign</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Utilities (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="portable_toilet"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758451.png" alt=""></span>portable_toilet</span>
+                            <span class="class-tag" data-class="dumpster"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758399.png" alt=""></span>dumpster</span>
+                            <span class="class-tag" data-class="storage_container"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/679/679821.png" alt=""></span>storage_container</span>
+                            <span class="class-tag" data-class="generator"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659899.png" alt=""></span>generator</span>
+                            <span class="class-tag" data-class="light_tower"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659834.png" alt=""></span>light_tower</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Materials (4)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="material_pile"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758380.png" alt=""></span>material_pile</span>
+                            <span class="class-tag" data-class="rebar_stack"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758467.png" alt=""></span>rebar_stack</span>
+                            <span class="class-tag" data-class="lumber_pile"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758437.png" alt=""></span>lumber_pile</span>
+                            <span class="class-tag" data-class="pipe_stack"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758457.png" alt=""></span>pipe_stack</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Hazards (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="open_excavation"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758393.png" alt=""></span>open_excavation</span>
+                            <span class="class-tag critical" data-class="exposed_rebar"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758467.png" alt=""></span>exposed_rebar</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">MENA-Specific (6)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="shade_structure"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1684/1684402.png" alt=""></span>shade_structure</span>
+                            <span class="class-tag" data-class="water_station"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/824/824239.png" alt=""></span>water_station</span>
+                            <span class="class-tag" data-class="dust_barrier"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt=""></span>dust_barrier</span>
+                            <span class="class-tag" data-class="arabic_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/197/197459.png" alt=""></span>arabic_sign</span>
+                            <span class="class-tag" data-class="prayer_area"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3190/3190012.png" alt=""></span>prayer_area</span>
+                            <span class="class-tag" data-class="cooling_fan"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2917/2917242.png" alt=""></span>cooling_fan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Vehicle-v1</span>
+                        <span class="model-badge badge-high">High</span>
+                    </div>
+                    <div class="model-category">Vehicles & Machinery</div>
+                    <div class="model-classes-count">30 Classes | HIGH Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Heavy Earthmoving (6)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="excavator"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774278.png" alt=""></span>excavator</span>
+                            <span class="class-tag critical" data-class="bulldozer"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt=""></span>bulldozer</span>
+                            <span class="class-tag" data-class="wheel_loader"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774320.png" alt=""></span>wheel_loader</span>
+                            <span class="class-tag" data-class="backhoe"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774268.png" alt=""></span>backhoe</span>
+                            <span class="class-tag" data-class="grader"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774310.png" alt=""></span>grader</span>
+                            <span class="class-tag" data-class="skid_steer"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774257.png" alt=""></span>skid_steer</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Lifting Equipment (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="tower_crane"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758356.png" alt=""></span>tower_crane</span>
+                            <span class="class-tag critical" data-class="mobile_crane"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774341.png" alt=""></span>mobile_crane</span>
+                            <span class="class-tag critical" data-class="crawler_crane"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774341.png" alt=""></span>crawler_crane</span>
+                            <span class="class-tag critical" data-class="forklift"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774331.png" alt=""></span>forklift</span>
+                            <span class="class-tag" data-class="telehandler"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774351.png" alt=""></span>telehandler</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Aerial (1)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="aerial_lift"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774361.png" alt=""></span>aerial_lift</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Transport (8)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="dump_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774247.png" alt=""></span>dump_truck</span>
+                            <span class="class-tag" data-class="concrete_mixer"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774237.png" alt=""></span>concrete_mixer</span>
+                            <span class="class-tag" data-class="flatbed_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/609/609361.png" alt=""></span>flatbed_truck</span>
+                            <span class="class-tag" data-class="water_tanker"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774227.png" alt=""></span>water_tanker</span>
+                            <span class="class-tag" data-class="fuel_tanker"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774217.png" alt=""></span>fuel_tanker</span>
+                            <span class="class-tag" data-class="worker_bus"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3124/3124473.png" alt=""></span>worker_bus</span>
+                            <span class="class-tag" data-class="boom_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774207.png" alt=""></span>boom_truck</span>
+                            <span class="class-tag" data-class="sewage_tanker"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774197.png" alt=""></span>sewage_tanker</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Paving & Compaction (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="road_roller"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774187.png" alt=""></span>road_roller</span>
+                            <span class="class-tag" data-class="plate_compactor"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774177.png" alt=""></span>plate_compactor</span>
+                            <span class="class-tag" data-class="asphalt_paver"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774167.png" alt=""></span>asphalt_paver</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Specialized (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="pile_driver"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3774/3774157.png" alt=""></span>pile_driver</span>
+                            <span class="class-tag" data-class="generator_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659899.png" alt=""></span>generator_truck</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">MENA Site Vehicles (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="pickup_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097180.png" alt=""></span>pickup_truck</span>
+                            <span class="class-tag" data-class="suv_site_vehicle"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097144.png" alt=""></span>suv_site_vehicle</span>
+                            <span class="class-tag" data-class="security_vehicle"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1545/1545229.png" alt=""></span>security_vehicle</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Emergency (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="ambulance"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2382/2382461.png" alt=""></span>ambulance</span>
+                            <span class="class-tag" data-class="fire_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2382/2382533.png" alt=""></span>fire_truck</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Fire-v1</span>
+                        <span class="model-badge badge-high">High</span>
+                    </div>
+                    <div class="model-category">Fire & Smoke Detection</div>
+                    <div class="model-classes-count">22 Classes | HIGH Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Core Fire Detection (7)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="fire"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/785/785116.png" alt=""></span>fire</span>
+                            <span class="class-tag critical" data-class="smoke"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4150/4150897.png" alt=""></span>smoke</span>
+                            <span class="class-tag" data-class="thick_smoke"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4150/4150897.png" alt=""></span>thick_smoke</span>
+                            <span class="class-tag" data-class="flames"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/785/785091.png" alt=""></span>flames</span>
+                            <span class="class-tag" data-class="spark"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1146/1146869.png" alt=""></span>spark</span>
+                            <span class="class-tag" data-class="explosion"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2913/2913133.png" alt=""></span>explosion</span>
+                            <span class="class-tag" data-class="electrical_fire"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659784.png" alt=""></span>electrical_fire</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Controlled Fire Sources (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="candle_flame"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3081/3081648.png" alt=""></span>candle_flame</span>
+                            <span class="class-tag" data-class="cooking_fire"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt=""></span>cooking_fire</span>
+                            <span class="class-tag" data-class="welding_sparks"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758483.png" alt=""></span>welding_sparks</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">People & Emergency (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="person_in_fire"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1974/1974504.png" alt=""></span>person_in_fire</span>
+                            <span class="class-tag" data-class="firefighter"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1974/1974519.png" alt=""></span>firefighter</span>
+                            <span class="class-tag" data-class="fire_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2382/2382533.png" alt=""></span>fire_truck</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Smoking Violations (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="smoking"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3170/3170733.png" alt=""></span>smoking</span>
+                            <span class="class-tag" data-class="cigarette"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3170/3170718.png" alt=""></span>cigarette</span>
+                            <span class="class-tag" data-class="vaping"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3170/3170762.png" alt=""></span>vaping</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Safety Equipment (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="fire_extinguisher"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/785/785104.png" alt=""></span>fire_extinguisher</span>
+                            <span class="class-tag" data-class="emergency_exit"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2311/2311518.png" alt=""></span>emergency_exit</span>
+                            <span class="class-tag" data-class="fire_alarm"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" alt=""></span>fire_alarm</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Hazardous Materials (1)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="flammable_liquid"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659744.png" alt=""></span>flammable_liquid</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Confounders (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="steam_vapor"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4150/4150865.png" alt=""></span>steam_vapor</span>
+                            <span class="class-tag critical" data-class="sunlight_glow"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3222/3222807.png" alt=""></span>sunlight_glow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Behavior-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Behavior-v1</span>
+                        <span class="model-badge badge-training">Training</span>
+                    </div>
+                    <div class="model-category">Unsafe Behaviors</div>
+                    <div class="model-classes-count">12 Classes | MEDIUM Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Fall & Posture Detection (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag ready" data-class="fall"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588658.png" alt=""></span>fall ✓</span>
+                            <span class="class-tag" data-class="low_posture"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588648.png" alt=""></span>low_posture</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Unsafe Movement (4)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="running"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588725.png" alt=""></span>running</span>
+                            <span class="class-tag" data-class="climbing"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588693.png" alt=""></span>climbing</span>
+                            <span class="class-tag" data-class="jumping"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588740.png" alt=""></span>jumping</span>
+                            <span class="class-tag" data-class="loitering"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3048/3048122.png" alt=""></span>loitering</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Hazardous Behavior (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="fighting"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588598.png" alt=""></span>fighting</span>
+                            <span class="class-tag critical" data-class="ladder_unsafe"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758427.png" alt=""></span>ladder_unsafe</span>
+                            <span class="class-tag" data-class="horseplay"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3588/3588710.png" alt=""></span>horseplay</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Workplace Violations (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag ready" data-class="phone_use"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/186/186239.png" alt=""></span>phone_use ✓</span>
+                            <span class="class-tag ready" data-class="smoking"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3170/3170733.png" alt=""></span>smoking ✓</span>
+                            <span class="class-tag ready" data-class="heavy_lifting"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2936/2936716.png" alt=""></span>heavy_lifting ✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Housekeeping-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Housekeeping-v1</span>
+                        <span class="model-badge badge-medium">Medium</span>
+                    </div>
+                    <div class="model-category">Hygiene & Hazards</div>
+                    <div class="model-classes-count">28 Classes | MEDIUM Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Spills & Liquids (4)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="liquid_spill"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3076/3076130.png" alt=""></span>liquid_spill</span>
+                            <span class="class-tag critical" data-class="oil_spill"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659694.png" alt=""></span>oil_spill</span>
+                            <span class="class-tag" data-class="wet_floor"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727382.png" alt=""></span>wet_floor</span>
+                            <span class="class-tag" data-class="leaking_pipe"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3076/3076170.png" alt=""></span>leaking_pipe</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Debris & Clutter (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="debris"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3156/3156954.png" alt=""></span>debris</span>
+                            <span class="class-tag" data-class="scattered_tools"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758499.png" alt=""></span>scattered_tools</span>
+                            <span class="class-tag" data-class="packaging_waste"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/685/685388.png" alt=""></span>packaging_waste</span>
+                            <span class="class-tag critical" data-class="broken_glass"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3156/3156974.png" alt=""></span>broken_glass</span>
+                            <span class="class-tag" data-class="metal_scraps"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3156/3156964.png" alt=""></span>metal_scraps</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Trip & Fall Hazards (4)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="trip_hazard"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/595/595067.png" alt=""></span>trip_hazard</span>
+                            <span class="class-tag critical" data-class="loose_cable"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659724.png" alt=""></span>loose_cable</span>
+                            <span class="class-tag critical" data-class="open_hole"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758393.png" alt=""></span>open_hole</span>
+                            <span class="class-tag" data-class="uneven_surface"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2758/2758380.png" alt=""></span>uneven_surface</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Blocked Access (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="blocked_exit"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2311/2311518.png" alt=""></span>blocked_exit</span>
+                            <span class="class-tag" data-class="blocked_pathway"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727382.png" alt=""></span>blocked_pathway</span>
+                            <span class="class-tag" data-class="blocked_equipment"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659899.png" alt=""></span>blocked_equipment</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Waste Management (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="overflowing_bin"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/685/685369.png" alt=""></span>overflowing_bin</span>
+                            <span class="class-tag" data-class="garbage_pile"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/685/685398.png" alt=""></span>garbage_pile</span>
+                            <span class="class-tag critical" data-class="hazardous_waste"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3659/3659744.png" alt=""></span>hazardous_waste</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Safety Equipment (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="fire_extinguisher"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/785/785104.png" alt=""></span>fire_extinguisher</span>
+                            <span class="class-tag" data-class="first_aid_kit"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" alt=""></span>first_aid_kit</span>
+                            <span class="class-tag" data-class="eye_wash_station"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3076/3076130.png" alt=""></span>eye_wash_station</span>
+                            <span class="class-tag" data-class="spill_kit"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3076/3076150.png" alt=""></span>spill_kit</span>
+                            <span class="class-tag" data-class="aed_defibrillator"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2966/2966484.png" alt=""></span>aed_defibrillator</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Warning Signs (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="wet_floor_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727382.png" alt=""></span>wet_floor_sign</span>
+                            <span class="class-tag" data-class="hazard_cone"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4727/4727400.png" alt=""></span>hazard_cone</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">MENA Environmental (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="sand_debris"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt=""></span>sand_debris</span>
+                            <span class="class-tag" data-class="dust_accumulation"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2917/2917985.png" alt=""></span>dust_accumulation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gesture-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">Gesture-v1</span>
+                        <span class="model-badge badge-low">Low</span>
+                    </div>
+                    <div class="model-category">Hand Signals & Emergency</div>
+                    <div class="model-classes-count">25 Classes | LOW Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">Emergency Signals (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="stop_hand"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434823.png" alt=""></span>stop_hand</span>
+                            <span class="class-tag critical" data-class="emergency_stop"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434823.png" alt=""></span>emergency_stop</span>
+                            <span class="class-tag critical" data-class="sos_signal"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2913/2913113.png" alt=""></span>sos_signal</span>
+                            <span class="class-tag critical" data-class="danger_signal"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/595/595067.png" alt=""></span>danger_signal</span>
+                            <span class="class-tag critical" data-class="evacuate_signal"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2311/2311518.png" alt=""></span>evacuate_signal</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Crane/Lifting Signals (7)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="hoist_up"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961948.png" alt=""></span>hoist_up</span>
+                            <span class="class-tag critical" data-class="lower_down"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961937.png" alt=""></span>lower_down</span>
+                            <span class="class-tag" data-class="boom_up"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961948.png" alt=""></span>boom_up</span>
+                            <span class="class-tag" data-class="boom_down"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961937.png" alt=""></span>boom_down</span>
+                            <span class="class-tag" data-class="swing_load"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434902.png" alt=""></span>swing_load</span>
+                            <span class="class-tag" data-class="dog_everything"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434823.png" alt=""></span>dog_everything</span>
+                            <span class="class-tag" data-class="load_release"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434891.png" alt=""></span>load_release</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Vehicle Guidance (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="guide_forward"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961957.png" alt=""></span>guide_forward</span>
+                            <span class="class-tag critical" data-class="guide_backward"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/2961/2961926.png" alt=""></span>guide_backward</span>
+                            <span class="class-tag" data-class="guide_turn"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434902.png" alt=""></span>guide_turn</span>
+                            <span class="class-tag" data-class="slow_down"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434880.png" alt=""></span>slow_down</span>
+                            <span class="class-tag" data-class="vehicle_stop"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434823.png" alt=""></span>vehicle_stop</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Directional (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="pointing"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434869.png" alt=""></span>pointing</span>
+                            <span class="class-tag" data-class="come_here"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434858.png" alt=""></span>come_here</span>
+                            <span class="class-tag" data-class="attention_wave"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434847.png" alt=""></span>attention_wave</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Acknowledgment (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="thumbs_up"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434836.png" alt=""></span>thumbs_up</span>
+                            <span class="class-tag" data-class="thumbs_down"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434825.png" alt=""></span>thumbs_down</span>
+                            <span class="class-tag" data-class="okay_sign"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/4434/4434814.png" alt=""></span>okay_sign</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Operation (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="start_operation"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3031/3031711.png" alt=""></span>start_operation</span>
+                            <span class="class-tag" data-class="end_operation"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3031/3031762.png" alt=""></span>end_operation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANPR-v1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">
+                        <span class="model-name">ANPR-v1</span>
+                        <span class="model-badge badge-low">Low</span>
+                    </div>
+                    <div class="model-category">License Plate Recognition</div>
+                    <div class="model-classes-count">32 Classes | LOW Priority</div>
+                </div>
+                <div class="model-body">
+                    <div class="class-group">
+                        <div class="group-title">License Plates (7)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="license_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097195.png" alt=""></span>license_plate</span>
+                            <span class="class-tag critical" data-class="saudi_private_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/197/197459.png" alt=""></span>saudi_private_plate</span>
+                            <span class="class-tag critical" data-class="saudi_commercial_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/197/197459.png" alt=""></span>saudi_commercial_plate</span>
+                            <span class="class-tag critical" data-class="saudi_government_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/197/197459.png" alt=""></span>saudi_government_plate</span>
+                            <span class="class-tag" data-class="gcc_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097195.png" alt=""></span>gcc_plate</span>
+                            <span class="class-tag" data-class="diplomatic_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097195.png" alt=""></span>diplomatic_plate</span>
+                            <span class="class-tag" data-class="temporary_plate"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097195.png" alt=""></span>temporary_plate</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Vehicle Types (7)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="sedan"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097157.png" alt=""></span>sedan</span>
+                            <span class="class-tag critical" data-class="suv"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097144.png" alt=""></span>suv</span>
+                            <span class="class-tag critical" data-class="pickup_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097180.png" alt=""></span>pickup_truck</span>
+                            <span class="class-tag" data-class="heavy_truck"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/609/609361.png" alt=""></span>heavy_truck</span>
+                            <span class="class-tag" data-class="bus"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3124/3124473.png" alt=""></span>bus</span>
+                            <span class="class-tag" data-class="van"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097131.png" alt=""></span>van</span>
+                            <span class="class-tag" data-class="motorcycle"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097118.png" alt=""></span>motorcycle</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Brands - Japanese (5)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="toyota"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969282.png" alt=""></span>toyota</span>
+                            <span class="class-tag critical" data-class="nissan"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969207.png" alt=""></span>nissan</span>
+                            <span class="class-tag" data-class="mitsubishi"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969177.png" alt=""></span>mitsubishi</span>
+                            <span class="class-tag" data-class="lexus"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969162.png" alt=""></span>lexus</span>
+                            <span class="class-tag" data-class="isuzu"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969145.png" alt=""></span>isuzu</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Brands - American (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="ford"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969097.png" alt=""></span>ford</span>
+                            <span class="class-tag" data-class="gmc"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969112.png" alt=""></span>gmc</span>
+                            <span class="class-tag" data-class="chevrolet"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969074.png" alt=""></span>chevrolet</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Brands - European (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="mercedes"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969168.png" alt=""></span>mercedes</span>
+                            <span class="class-tag" data-class="bmw"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969052.png" alt=""></span>bmw</span>
+                            <span class="class-tag" data-class="land_rover"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969157.png" alt=""></span>land_rover</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Brands - Korean (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="hyundai"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969139.png" alt=""></span>hyundai</span>
+                            <span class="class-tag" data-class="kia"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969152.png" alt=""></span>kia</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">Brands - Other (2)</div>
+                        <div class="class-tags">
+                            <span class="class-tag" data-class="chinese_brand"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969067.png" alt=""></span>chinese_brand</span>
+                            <span class="class-tag" data-class="other_brand"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097195.png" alt=""></span>other_brand</span>
+                        </div>
+                    </div>
+                    <div class="class-group">
+                        <div class="group-title">OCR Detection Regions (3)</div>
+                        <div class="class-tags">
+                            <span class="class-tag critical" data-class="plate_region"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" alt=""></span>plate_region</span>
+                            <span class="class-tag" data-class="vehicle_front"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097157.png" alt=""></span>vehicle_front</span>
+                            <span class="class-tag" data-class="vehicle_rear"><span class="class-icon"><img src="https://cdn-icons-png.flaticon.com/512/3097/3097157.png" alt=""></span>vehicle_rear</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>ViewKeeper AI Safety Platform - MENA/Saudi Arabia Focus</p>
+            <p class="timestamp">Generated on February 2, 2026</p>
+            <p class="flaticon-credit">Icons by <a href="https://www.flaticon.com" target="_blank">Flaticon</a> | Images from <a href="https://unsplash.com" target="_blank">Unsplash</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Image mapping for each class - using Unsplash for free stock images
+        const classImages = {
+            aed_defibrillator: 'ViewKeeper_Class_Images/aed_defibrillator.jpg',
+            aerial_lift: 'ViewKeeper_Class_Images/aerial_lift.jpg',
+            ambulance: 'ViewKeeper_Class_Images/ambulance.jpg',
+            apron: 'ViewKeeper_Class_Images/apron.jpg',
+            arabic_sign: 'ViewKeeper_Class_Images/arabic_sign.jpg',
+            asphalt_paver: 'ViewKeeper_Class_Images/asphalt_paver.jpg',
+            attention_wave: 'ViewKeeper_Class_Images/attention_wave.jpg',
+            backhoe: 'ViewKeeper_Class_Images/backhoe.jpg',
+            barricade: 'ViewKeeper_Class_Images/barricade.jpg',
+            blocked_equipment: 'ViewKeeper_Class_Images/blocked_equipment.jpg',
+            blocked_exit: 'ViewKeeper_Class_Images/blocked_exit.jpg',
+            blocked_pathway: 'ViewKeeper_Class_Images/blocked_pathway.jpg',
+            bmw: 'ViewKeeper_Class_Images/bmw.jpg',
+            bollard: 'ViewKeeper_Class_Images/bollard.jpg',
+            boom_down: 'ViewKeeper_Class_Images/boom_down.jpg',
+            boom_truck: 'ViewKeeper_Class_Images/boom_truck.jpg',
+            boom_up: 'ViewKeeper_Class_Images/boom_up.jpg',
+            boots: 'ViewKeeper_Class_Images/boots.jpg',
+            broken_glass: 'ViewKeeper_Class_Images/broken_glass.jpg',
+            bulldozer: 'ViewKeeper_Class_Images/bulldozer.jpg',
+            bus: 'ViewKeeper_Class_Images/bus.jpg',
+            candle_flame: 'ViewKeeper_Class_Images/candle_flame.jpg',
+            caution_tape: 'ViewKeeper_Class_Images/caution_tape.jpg',
+            chevrolet: 'ViewKeeper_Class_Images/chevrolet.jpg',
+            chinese_brand: 'ViewKeeper_Class_Images/chinese_brand.jpg',
+            cigarette: 'ViewKeeper_Class_Images/cigarette.jpg',
+            climbing: 'ViewKeeper_Class_Images/climbing.jpg',
+            come_here: 'ViewKeeper_Class_Images/come_here.jpg',
+            concrete_mixer: 'ViewKeeper_Class_Images/concrete_mixer.jpg',
+            construction_sign: 'ViewKeeper_Class_Images/construction_sign.jpg',
+            cooking_fire: 'ViewKeeper_Class_Images/cooking_fire.jpg',
+            cooling_fan: 'ViewKeeper_Class_Images/cooling_fan.jpg',
+            coveralls: 'ViewKeeper_Class_Images/coveralls.jpg',
+            crawler_crane: 'ViewKeeper_Class_Images/crawler_crane.jpg',
+            danger_sign: 'ViewKeeper_Class_Images/danger_sign.jpg',
+            danger_signal: 'ViewKeeper_Class_Images/danger_signal.jpg',
+            debris: 'ViewKeeper_Class_Images/debris.jpg',
+            diplomatic_plate: 'ViewKeeper_Class_Images/diplomatic_plate.jpg',
+            dog_everything: 'ViewKeeper_Class_Images/dog_everything.jpg',
+            dump_truck: 'ViewKeeper_Class_Images/dump_truck.jpg',
+            dumpster: 'ViewKeeper_Class_Images/dumpster.jpg',
+            dust_accumulation: 'ViewKeeper_Class_Images/dust_accumulation.jpg',
+            dust_barrier: 'ViewKeeper_Class_Images/dust_barrier.jpg',
+            earmuff: 'ViewKeeper_Class_Images/earmuff.jpg',
+            electrical_fire: 'ViewKeeper_Class_Images/electrical_fire.jpg',
+            emergency_exit: 'ViewKeeper_Class_Images/emergency_exit.jpg',
+            emergency_stop: 'ViewKeeper_Class_Images/emergency_stop.jpg',
+            end_operation: 'ViewKeeper_Class_Images/end_operation.jpg',
+            evacuate_signal: 'ViewKeeper_Class_Images/evacuate_signal.jpg',
+            excavator: 'ViewKeeper_Class_Images/excavator.jpg',
+            exit_sign: 'ViewKeeper_Class_Images/exit_sign.jpg',
+            explosion: 'ViewKeeper_Class_Images/explosion.jpg',
+            exposed_rebar: 'ViewKeeper_Class_Images/exposed_rebar.jpg',
+            eye_wash_station: 'ViewKeeper_Class_Images/eye_wash_station.jpg',
+            face_shield: 'ViewKeeper_Class_Images/face_shield.jpg',
+            fall: 'ViewKeeper_Class_Images/fall.jpg',
+            fighting: 'ViewKeeper_Class_Images/fighting.jpg',
+            fire: 'ViewKeeper_Class_Images/fire.jpg',
+            fire_alarm: 'ViewKeeper_Class_Images/fire_alarm.jpg',
+            fire_extinguisher: 'ViewKeeper_Class_Images/fire_extinguisher.jpg',
+            fire_truck: 'ViewKeeper_Class_Images/fire_truck.jpg',
+            firefighter: 'ViewKeeper_Class_Images/firefighter.jpg',
+            first_aid_kit: 'ViewKeeper_Class_Images/first_aid_kit.jpg',
+            flames: 'ViewKeeper_Class_Images/flames.jpg',
+            flammable_liquid: 'ViewKeeper_Class_Images/flammable_liquid.jpg',
+            flatbed_truck: 'ViewKeeper_Class_Images/flatbed_truck.jpg',
+            ford: 'ViewKeeper_Class_Images/ford.jpeg',
+            forklift: 'ViewKeeper_Class_Images/forklift.jpg',
+            formwork: 'ViewKeeper_Class_Images/formwork.jpg',
+            fuel_tanker: 'ViewKeeper_Class_Images/fuel_tanker.jpg',
+            garbage_pile: 'ViewKeeper_Class_Images/garbage_pile.jpg',
+            gcc_plate: 'ViewKeeper_Class_Images/gcc_plate.jpg',
+            generator: 'ViewKeeper_Class_Images/generator.jpg',
+            generator_truck: 'ViewKeeper_Class_Images/generator_truck.jpg',
+            gloves: 'ViewKeeper_Class_Images/gloves.jpg',
+            gmc: 'ViewKeeper_Class_Images/gmc.jpg',
+            goggles: 'ViewKeeper_Class_Images/goggles.jpg',
+            grader: 'ViewKeeper_Class_Images/grader.jpg',
+            guardrail: 'ViewKeeper_Class_Images/guardrail.jpg',
+            guide_backward: 'ViewKeeper_Class_Images/guide_backward.jpg',
+            guide_forward: 'ViewKeeper_Class_Images/guide_forward.jpg',
+            guide_turn: 'ViewKeeper_Class_Images/guide_turn.jpg',
+            harness: 'ViewKeeper_Class_Images/harness.jpg',
+            hazard_cone: 'ViewKeeper_Class_Images/hazard_cone.jpg',
+            hazardous_waste: 'ViewKeeper_Class_Images/hazardous_waste.jpg',
+            heavy_lifting: 'ViewKeeper_Class_Images/heavy_lifting.jpg',
+            heavy_truck: 'ViewKeeper_Class_Images/heavy_truck.jpg',
+            helmet: 'ViewKeeper_Class_Images/helmet.jpg',
+            hoist_up: 'ViewKeeper_Class_Images/hoist_up.jpg',
+            horseplay: 'ViewKeeper_Class_Images/horseplay.jpg',
+            hyundai: 'ViewKeeper_Class_Images/hyundai.jpg',
+            isuzu: 'ViewKeeper_Class_Images/isuzu.jpg',
+            jumping: 'ViewKeeper_Class_Images/jumping.jpg',
+            kia: 'ViewKeeper_Class_Images/kia.jpeg',
+            ladder: 'ViewKeeper_Class_Images/ladder.jpg',
+            ladder_unsafe: 'ViewKeeper_Class_Images/ladder_unsafe.jpg',
+            land_rover: 'ViewKeeper_Class_Images/land_rover.jpg',
+            leaking_pipe: 'ViewKeeper_Class_Images/leaking_pipe.jpg',
+            lexus: 'ViewKeeper_Class_Images/lexus.jpg',
+            license_plate: 'ViewKeeper_Class_Images/license_plate.jpg',
+            light_tower: 'ViewKeeper_Class_Images/light_tower.jpg',
+            liquid_spill: 'ViewKeeper_Class_Images/liquid_spill.jpg',
+            load_release: 'ViewKeeper_Class_Images/load_release.jpg',
+            loitering: 'ViewKeeper_Class_Images/loitering.jpg',
+            loose_cable: 'ViewKeeper_Class_Images/loose_cable.jpg',
+            low_posture: 'ViewKeeper_Class_Images/low_posture.jpg',
+            lower_down: 'ViewKeeper_Class_Images/lower_down.jpg',
+            lumber_pile: 'ViewKeeper_Class_Images/lumber_pile.jpg',
+            mask: 'ViewKeeper_Class_Images/mask.jpg',
+            material_pile: 'ViewKeeper_Class_Images/material_pile.jpg',
+            mercedes: 'ViewKeeper_Class_Images/mercedes.jpg',
+            metal_scraps: 'ViewKeeper_Class_Images/metal_scraps.jpg',
+            mitsubishi: 'ViewKeeper_Class_Images/mitsubishi.jpg',
+            mobile_crane: 'ViewKeeper_Class_Images/mobile_crane.jpg',
+            motorcycle: 'ViewKeeper_Class_Images/motorcycle.jpg',
+            nissan: 'ViewKeeper_Class_Images/nissan.jpg',
+            no_boots: 'ViewKeeper_Class_Images/no_boots.jpg',
+            no_gloves: 'ViewKeeper_Class_Images/no_gloves.jpg',
+            no_helmet: 'ViewKeeper_Class_Images/no_helmet.jpg',
+            no_vest: 'ViewKeeper_Class_Images/no_vest.jpg',
+            oil_spill: 'ViewKeeper_Class_Images/oil_spill.jpg',
+            okay_sign: 'ViewKeeper_Class_Images/okay_sign.jpg',
+            open_excavation: 'ViewKeeper_Class_Images/open_excavation.jpg',
+            open_hole: 'ViewKeeper_Class_Images/open_hole.jpg',
+            other_brand: 'ViewKeeper_Class_Images/other_brand.jpg',
+            overflowing_bin: 'ViewKeeper_Class_Images/overflowing_bin.jpg',
+            packaging_waste: 'ViewKeeper_Class_Images/packaging_waste.jpg',
+            person_in_fire: 'ViewKeeper_Class_Images/person_in_fire.jpg',
+            phone_use: 'ViewKeeper_Class_Images/phone_use.jpg',
+            pickup_truck: 'ViewKeeper_Class_Images/pickup_truck.jpg',
+            pile_driver: 'ViewKeeper_Class_Images/pile_driver.jpg',
+            pipe_stack: 'ViewKeeper_Class_Images/pipe_stack.jpg',
+            plate_compactor: 'ViewKeeper_Class_Images/plate_compactor.jpg',
+            plate_region: 'ViewKeeper_Class_Images/plate_region.jpg',
+            platform: 'ViewKeeper_Class_Images/platform.jpg',
+            pointing: 'ViewKeeper_Class_Images/pointing.jpg',
+            portable_toilet: 'ViewKeeper_Class_Images/portable_toilet.jpg',
+            prayer_area: 'ViewKeeper_Class_Images/prayer_area.jpg',
+            rebar_stack: 'ViewKeeper_Class_Images/rebar_stack.jpg',
+            road_roller: 'ViewKeeper_Class_Images/road_roller.jpg',
+            running: 'ViewKeeper_Class_Images/running.jpg',
+            safety_barrier: 'ViewKeeper_Class_Images/safety_barrier.jpg',
+            safety_cone: 'ViewKeeper_Class_Images/safety_cone.jpg',
+            safety_net: 'ViewKeeper_Class_Images/safety_net.jpg',
+            sand_debris: 'ViewKeeper_Class_Images/sand_debris.jpg',
+            saudi_commercial_plate: 'ViewKeeper_Class_Images/saudi_commercial_plate.jpg',
+            saudi_government_plate: 'ViewKeeper_Class_Images/saudi_government_plate.jpg',
+            saudi_private_plate: 'ViewKeeper_Class_Images/saudi_private_plate.jpg',
+            scaffolding: 'ViewKeeper_Class_Images/scaffolding.jpg',
+            scattered_tools: 'ViewKeeper_Class_Images/scattered_tools.jpg',
+            security_vehicle: 'ViewKeeper_Class_Images/security_vehicle.jpg',
+            sedan: 'ViewKeeper_Class_Images/sedan.jpg',
+            sewage_tanker: 'ViewKeeper_Class_Images/sewage_tanker.jpg',
+            shade_structure: 'ViewKeeper_Class_Images/shade_structure.jpg',
+            skid_steer: 'ViewKeeper_Class_Images/skid_steer.jpg',
+            slow_down: 'ViewKeeper_Class_Images/slow_down.jpg',
+            smoke: 'ViewKeeper_Class_Images/smoke.jpg',
+            smoking: 'ViewKeeper_Class_Images/smoking.jpeg',
+            sos_signal: 'ViewKeeper_Class_Images/sos_signal.jpg',
+            spark: 'ViewKeeper_Class_Images/spark.jpg',
+            speed_limit_sign: 'ViewKeeper_Class_Images/speed_limit_sign.jpg',
+            spill_kit: 'ViewKeeper_Class_Images/spill_kit.jpg',
+            start_operation: 'ViewKeeper_Class_Images/start_operation.jpg',
+            steam_vapor: 'ViewKeeper_Class_Images/steam_vapor.jpg',
+            stop_hand: 'ViewKeeper_Class_Images/stop_hand.jpg',
+            storage_container: 'ViewKeeper_Class_Images/storage_container.jpg',
+            sunlight_glow: 'ViewKeeper_Class_Images/sunlight_glow.jpeg',
+            suv: 'ViewKeeper_Class_Images/suv.jpg',
+            suv_site_vehicle: 'ViewKeeper_Class_Images/suv_site_vehicle.jpg',
+            swing_load: 'ViewKeeper_Class_Images/swing_load.jpg',
+            telehandler: 'ViewKeeper_Class_Images/telehandler.jpg',
+            temporary_fence: 'ViewKeeper_Class_Images/temporary_fence.jpg',
+            temporary_plate: 'ViewKeeper_Class_Images/temporary_plate.jpg',
+            thick_smoke: 'ViewKeeper_Class_Images/thick_smoke.jpg',
+            thumbs_down: 'ViewKeeper_Class_Images/thumbs_down.jpg',
+            thumbs_up: 'ViewKeeper_Class_Images/thumbs_up.jpg',
+            tower_crane: 'ViewKeeper_Class_Images/tower_crane.jpg',
+            toyota: 'ViewKeeper_Class_Images/toyota.jpg',
+            trip_hazard: 'ViewKeeper_Class_Images/trip_hazard.jpg',
+            uneven_surface: 'ViewKeeper_Class_Images/uneven_surface.jpg',
+            van: 'ViewKeeper_Class_Images/van.jpg',
+            vaping: 'ViewKeeper_Class_Images/vaping.jpg',
+            vehicle_front: 'ViewKeeper_Class_Images/vehicle_front.jpg',
+            vehicle_rear: 'ViewKeeper_Class_Images/vehicle_rear.jpg',
+            vehicle_stop: 'ViewKeeper_Class_Images/vehicle_stop.jpg',
+            vest: 'ViewKeeper_Class_Images/vest.jpg',
+            warning_sign: 'ViewKeeper_Class_Images/warning_sign.jpg',
+            water_station: 'ViewKeeper_Class_Images/water_station.jpg',
+            water_tanker: 'ViewKeeper_Class_Images/water_tanker.jpg',
+            welding_sparks: 'ViewKeeper_Class_Images/welding_sparks.jpg',
+            wet_floor: 'ViewKeeper_Class_Images/wet_floor.jpg',
+            wet_floor_sign: 'ViewKeeper_Class_Images/wet_floor_sign.jpg',
+            wheel_loader: 'ViewKeeper_Class_Images/wheel_loader.jpg',
+            worker_bus: 'ViewKeeper_Class_Images/worker_bus.jpg'
+        };
+
+        // Create global preview element appended to body (escapes all overflow clipping)
+        const globalPreview = document.createElement('div');
+        globalPreview.id = 'global-preview';
+        globalPreview.innerHTML = `
+            <img src="" alt="" loading="lazy">
+            <div class="preview-label"></div>
+        `;
+        document.body.appendChild(globalPreview);
+
+        const previewImg = globalPreview.querySelector('img');
+        const previewLabel = globalPreview.querySelector('.preview-label');
+
+        // Position and show preview on hover
+        document.querySelectorAll('.class-tag[data-class]').forEach(tag => {
+            tag.addEventListener('mouseenter', (e) => {
+                const className = tag.getAttribute('data-class');
+                const imageUrl = classImages[className] || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop';
+
+                // Update content
+                previewImg.src = imageUrl;
+                previewImg.alt = className;
+                previewLabel.textContent = className.replace(/_/g, ' ');
+
+                // Calculate position
+                const rect = tag.getBoundingClientRect();
+                const previewWidth = 220;
+                const previewHeight = 210; // approximate height
+                const margin = 15;
+
+                // Center horizontally on the tag
+                let left = rect.left + (rect.width / 2) - (previewWidth / 2);
+
+                // Keep within viewport horizontally
+                if (left < 10) left = 10;
+                if (left + previewWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - previewWidth - 10;
+                }
+
+                // Try to position above the tag, if not enough space, show below
+                let top;
+                globalPreview.classList.remove('arrow-bottom', 'arrow-top');
+
+                if (rect.top > previewHeight + margin) {
+                    // Show above
+                    top = rect.top - previewHeight - margin;
+                    globalPreview.classList.add('arrow-bottom');
+                } else {
+                    // Show below
+                    top = rect.bottom + margin;
+                    globalPreview.classList.add('arrow-top');
+                }
+
+                globalPreview.style.left = left + 'px';
+                globalPreview.style.top = top + 'px';
+                globalPreview.classList.add('visible');
+            });
+
+            tag.addEventListener('mouseleave', () => {
+                globalPreview.classList.remove('visible');
+            });
+        });
+    </script>
+</body>
+</html>
